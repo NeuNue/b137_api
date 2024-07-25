@@ -423,4 +423,283 @@ paths:
                     nullable: true
                     description: The Twitter handle of the requested Bitcoin address.
                     example: "Sleinnnn"
-                    
+
+  /inscribe-order/create:
+    post:
+      summary: Create Inscribe Order
+      description: Create a new inscribe order.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentAddress:
+                  type: string
+                  description: Address for payment
+                  example: "bc1plhw3qceajqpv2q96zt365z278ce5jyecz0d5zjrnrad96y7c34msk4v7u6"
+                paymentPubKey:
+                  type: string
+                  description: Public key for payment
+                  example: "02a1633cafc9855dd8036469083f987551b37c2a1c65d48b7e87f6e6a8d1f7bc2b"
+                receiveAddress:
+                  type: string
+                  description: Address to receive the inscription
+                  example: "bc1qs5rlg0m5cscyc32a3yms4y6m7l5f4f0r2lg3sk"
+                feeRate:
+                  type: number
+                  description: Gas fee rate
+                  example: 5
+                inscribeData:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: Type of inscription, "MintDID" or "BindDIDTLD"
+                      example: "MintDID"
+                    didName:
+                      type: string
+                      description: DID name to be inscribed
+                      example: "gene"
+                    tldName:
+                      type: string
+                      description: TLD name to be inscribed, required when inscribeData.type is "BindDIDTLD"
+                      example: "b137"
+      responses:
+        '200':
+          description: Successfully created inscribe order
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    description: Order ID
+                    example: "123456"
+                  paymentAddress:
+                    type: string
+                    description: Address for payment
+                    example: "bc1plhw3qceajqpv2q96zt365z278ce5jyecz0d5zjrnrad96y7c34msk4v7u6"
+                  receiveAddress:
+                    type: string
+                    description: Address to receive the inscription
+                    example: "bc1qs5rlg0m5cscyc32a3yms4y6m7l5f4f0r2lg3sk"
+                  feeRate:
+                    type: number
+                    description: Gas fee rate
+                    example: 5
+                  inscribeData:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: Type of inscription
+                        example: "MintDID"
+                      didName:
+                        type: string
+                        description: DID name to be inscribed
+                        example: "gene"
+                      tldName:
+                        type: string
+                        description: TLD name to be inscribed
+                        example: "b137"
+                  status:
+                    type: string
+                    description: Order status
+                    example: "created"
+                  psbt:
+                    type: string
+                    description: Partially Signed Bitcoin Transaction (PSBT) to be signed
+                    example: "cHNidP8BAH0CAAAAAdEdRUn..."
+
+  /inscribe-order/submit:
+    post:
+      summary: Submit Inscribe Order
+      description: Submit a signed inscribe order.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  description: Order ID
+                  example: "123456"
+                signedPsbt:
+                  type: string
+                  description: Signed Partially Signed Bitcoin Transaction (PSBT)
+                  example: "cHNidP8BAH0CAAAAAdEdRUn..."
+      responses:
+        '200':
+          description: Successfully submitted inscribe order
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    description: Order ID
+                    example: "123456"
+                  status:
+                    type: string
+                    description: Order status
+                    example: "submitted"
+                  transactionHash:
+                    type: string
+                    description: Transaction hash
+                    example: "4a5e1e4baab89f3a32518a8b"
+
+  /inscribe-order/refresh:
+    get:
+      summary: Refresh Inscribe Order
+      description: Refresh the status of an inscribe order.
+      parameters:
+        - name: orderId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Order ID
+          example: "123456"
+      responses:
+        '200':
+          description: Successfully refreshed inscribe order
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    description: Order ID
+                    example: "123456"
+                  status:
+                    type: string
+                    description: Order status
+                    example: "confirmed"
+                  transactionHash:
+                    type: string
+                    description: Transaction hash
+                    example: "4a5e1e4baab89f3a32518a8b"
+
+  /inscribe-order/search:
+    get:
+      summary: Search Inscribe Orders
+      description: Search for inscribe orders that match the given criteria.
+      parameters:
+        - name: paymentAddress
+          in: query
+          schema:
+            type: string
+          description: Payment address
+          example: "bc1plhw3qceajqpv2q96zt365z278ce5jyecz0d5zjrnrad96y7c34msk4v7u6"
+        - name: receiveAddress
+          in: query
+          schema:
+            type: string
+          description: Receive address
+          example: "bc1qs5rlg0m5cscyc32a3yms4y6m7l5f4f0r2lg3sk"
+        - name: status
+          in: query
+          schema:
+            type: string
+          description: Order status
+          example: "created"
+        - name: type
+          in: query
+          schema:
+            type: string
+          description: Order type
+          example: "MintDID"
+        - name: startTime
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start time
+          example: "2024-01-01T00:00:00Z"
+        - name: endTime
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End time
+          example: "2024-01-02T00:00:00Z"
+        - name: start
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Starting record
+          example: 0
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Number of records to return, maximum 100
+          example: 10
+      responses:
+        '200':
+          description: Successfully searched inscribe orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    description: '0: Success, -1: Error'
+                    example: 0
+                  data:
+                    type: object
+                    properties:
+                      list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            orderId:
+                              type: string
+                              description: Order ID
+                              example: "123456"
+                            paymentAddress:
+                              type: string
+                              description: Payment address
+                              example: "bc1plhw3qceajqpv2q96zt365z278ce5jyecz0d5zjrnrad96y7c34msk4v7u6"
+                            receiveAddress:
+                              type: string
+                              description: Receive address
+                              example: "bc1qs5rlg0m5cscyc32a3yms4y6m7l5f4f0r2lg3sk"
+                            feeRate:
+                              type: number
+                              description: Gas fee rate
+                              example: 5
+                            inscribeData:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  description: Type of inscription
+                                  example: "MintDID"
+                                didName:
+                                  type: string
+                                  description: DID name to be inscribed
+                                  example: "gene"
+                                tldName:
+                                  type: string
+                                  description: TLD name to be inscribed
+                                  example: "b137"
+                            status:
+                              type: string
+                              description: Order status
+                              example: "created"
+                            psbt:
+                              type: string
+                              description: Partially Signed Bitcoin Transaction (PSBT)
+                              example: "cHNidP8BAH0CAAAAAdEdRUn
