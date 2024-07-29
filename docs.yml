@@ -6,7 +6,6 @@ info:
 servers:
   - url: https://open-api.b137.io/v1
 paths:
-
   /resolveName:
     get:
       summary: Resolve DID Name
