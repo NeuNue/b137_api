@@ -4,7 +4,7 @@ info:
   description: API documentation for resolving DID names using the B137 protocol.
   version: 1.0.0
 servers:
-  - url: https://www.b137.io/openapi/v1
+  - url: https://open-api.b137.io/v1
 paths:
 
   /resolveName:
