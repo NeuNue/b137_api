@@ -702,4 +702,4 @@ paths:
                             psbt:
                               type: string
                               description: Partially Signed Bitcoin Transaction (PSBT)
-                              example: "cHNidP8BAH0CAAAAAdEdRUn
+                              example: "cHNidP8BAH0CAAAAAdEdRUn"
